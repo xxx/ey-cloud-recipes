@@ -65,9 +65,16 @@ execute "add-mongodb-to-default-run-level" do
   not_if "rc-status | grep mongodb"
 end
 
-execute "ensure-mongodb-is-running" do
+execute "ensure-mongodb-is-stopped" do
   command %Q{
-    /etc/init.d/mongodb start
+    /etc/init.d/mongodb stop >/dev/null 2>&1
+  }
+  only_if "pgrep mongod"
+end
+
+execute "ensure-mongodb-is-started" do
+  command %Q{
+    /etc/init.d/mongodb start >/dev/null 2>&1
   }
   not_if "pgrep mongod"
 end
