@@ -1,16 +1,18 @@
+#!/sbin/runscript
+
 depend() {
   use net
 }
 
 start() {
   ebegin "Starting mongodb"
-  /usr/local/mongodb/bin/mongod --master --port 27017 --dbpath /data/masterdb/ > /dev/null 2>&1 &
-  /usr/local/mongodb/bin/mongod --slave --port 27018 --dbpath /data/slavedb/ > /dev/null 2>&1 &
+  /usr/local/mongodb/bin/mongod --master --port 27017 --dbpath /data/master/ --fork --logpath /var/log/mongo-master.log --logappend
+  /usr/local/mongodb/bin/mongod --slave --port 27018 --dbpath /data/slave/ --fork --logpath /var/log/mongo-slave.log --logappend
   eend $?
 }
 
 stop() {
   ebegin "Stopping mongodb"
-  start-stop-daemon --stop --quiet --exec /usr/local/mongodb/bin/mongod
+  start-stop-daemon --stop --exec /usr/local/mongodb/bin/mongod
   eend $?
 }
